@@ -86,6 +86,12 @@ android {
         versionName "1.0"
     }
     signingConfigs {
+         release {
+            storeFile file('cal-release.jks') // Path to your keystore
+            storePassword 'developer' // Replace with your keystore password
+            keyAlias 'calendar-kanban' // Replace with your key alias
+            keyPassword 'developer' // Replace with your key password
+        }
         debug {
             storeFile file('debug.keystore')
             storePassword 'android'

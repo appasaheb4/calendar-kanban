@@ -1,130 +1,118 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
+import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
-import {
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {StyleSheet, View, Text, Image} from 'react-native';
+import {Header} from './src/core-components';
+import LinearGradient from 'react-native-linear-gradient';
 
 import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+  formatDateToKey,
+  getDateToString,
+  getServiceData,
+} from './src/core-utils/utilities';
+import {Event} from './src/models/event.model';
 
 type SectionProps = PropsWithChildren<{
   title: string;
 }>;
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  /*
-   * To keep the template simple and small we're adding padding to prevent view
-   * from rendering under the System UI.
-   * For bigger apps the reccomendation is to use `react-native-safe-area-context`:
-   * https://github.com/AppAndFlow/react-native-safe-area-context
-   *
-   * You can read more about it here:
-   * https://github.com/react-native-community/discussions-and-proposals/discussions/827
-   */
-  const safePadding = '5%';
+  const [dateTitle, setDateTitle] = useState(new Date().toDateString());
+  const [eventsList, setEventList] = useState(
+    getServiceData(getDateToString(new Date())),
+  );
 
   return (
-    <View style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
+    <LinearGradient
+      colors={['#f6f8ff', '#efe6ff']}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 1}}
+      style={styles.container}>
+      <Header
+        onSelectDate={date => {
+          setDateTitle(date);
+          setEventList(getServiceData(formatDateToKey(date)));
+        }}
       />
-      <ScrollView
-        style={backgroundStyle}>
-        <View style={{paddingRight: safePadding}}>
-          <Header/>
-        </View>
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-            paddingHorizontal: safePadding,
-            paddingBottom: safePadding,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </View>
+      <View style={styles.mainView}>
+        <Text style={styles.dayTitle}>{dateTitle}</Text>
+        {eventsList?.map((item: Event, index: number) => (
+          <View style={styles.card} key={index}>
+            <LinearGradient
+              colors={['#4f46e5', '#7c3aed']} // Diagonal gradient colors
+              start={{x: 0, y: 0}}
+              end={{x: 1, y: 1}}
+              style={[styles.cardTime]}>
+              <Text style={{color: 'white'}}>{item.time}</Text>
+            </LinearGradient>
+            <Image
+              source={{
+                uri: item.imageUrl,
+              }}
+              style={styles.cardImage}
+            />
+            <View style={styles.cardContent}>
+              <Text style={styles.cardTitle}>{item.title}</Text>
+              <Text style={styles.cardSubtitle}>{item.description}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  mainView: {
+    flex: 1,
+    padding: 20,
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  dayTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
   },
-  highlight: {
-    fontWeight: '700',
+  card: {
+    marginTop: 20,
+    backgroundColor: 'white',
+    borderRadius: 10,
+    overflow: 'hidden',
+    shadowColor: '#000',
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5, // For Android shadow
+  },
+  cardTime: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)', // Semi-transparent background
+    color: 'white',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    fontSize: 12,
+    fontWeight: 'bold',
+  },
+  cardImage: {
+    width: '100%',
+    height: 160,
+    zIndex: -1,
+  },
+  cardContent: {
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  cardTitle: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  cardSubtitle: {
+    fontSize: 14,
+    color: '#666',
   },
 });
 
