@@ -1,19 +1,15 @@
 import React, {useState} from 'react';
 import type {PropsWithChildren} from 'react';
 import {StyleSheet, View, Text, Image} from 'react-native';
-import {Header} from './src/core-components';
+import {Header} from './core-components';
 import LinearGradient from 'react-native-linear-gradient';
 
 import {
   formatDateToKey,
   getDateToString,
   getServiceData,
-} from './src/core-utils/utilities';
-import {Event} from './src/models/event.model';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+} from './core-utils/utilities';
+import {Event} from './models/event.model';
 
 function App(): React.JSX.Element {
   const [dateTitle, setDateTitle] = useState(new Date().toDateString());
