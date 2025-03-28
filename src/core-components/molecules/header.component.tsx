@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -11,10 +11,11 @@ import LinearGradient from 'react-native-linear-gradient';
 const daysOfWeek = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
 type HeaderProps = {
+  currentDate: Date;
   onSelectDate: (date: string) => void;
 };
 
-export const Header: React.FC<HeaderProps> = ({onSelectDate}) => {
+export const Header: React.FC<HeaderProps> = ({currentDate, onSelectDate}) => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const getWeekDates = () => {
     const currentDate = new Date();
@@ -26,6 +27,10 @@ export const Header: React.FC<HeaderProps> = ({onSelectDate}) => {
       return date;
     });
   };
+
+  useEffect(() => {
+    setSelectedDate(currentDate);
+  }, [currentDate]);
 
   const weekDates = getWeekDates();
   return (
